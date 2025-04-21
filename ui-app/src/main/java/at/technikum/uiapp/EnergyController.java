@@ -6,32 +6,51 @@ import javafx.scene.control.*;
 public class EnergyController {
 
     @FXML
-    private Label communityUsedLabel, gridPortionLabel, producedLabel, usedLabel, gridUsedLabel;
+    private Label communityUsedLabel, gridPortionLabel;
 
     @FXML
     private DatePicker startDate, endDate;
 
     @FXML
-    private Button refreshButton, showDataButton;
+    private Label producedLabel, usedLabel, gridUsedLabel;
+
+    private final ApiController apiController = new ApiController();
 
     @FXML
     protected void onRefreshClick() {
-        System.out.println("Refreshing data...");
-        communityUsedLabel.setText("78.54%");
-        gridPortionLabel.setText("7.23%");
+        try {
+            EnergyCurrent current = apiController.getCurrentEnergyData();
+            communityUsedLabel.setText(String.format("%.2f %%", current.getCommunityPool()));
+            gridPortionLabel.setText(String.format("%.2f %%", current.getGridPortion()));
+        } catch (Exception e) {
+            communityUsedLabel.setText("Fehler");
+            gridPortionLabel.setText("Fehler");
+            e.printStackTrace();
+        }
     }
 
     @FXML
     protected void onShowDataClick() {
-        String start = startDate.getValue() != null ? startDate.getValue().toString() : "Start not set";
-        String end = endDate.getValue() != null ? endDate.getValue().toString() : "End not set";
+        try {
+            if (startDate.getValue() == null || endDate.getValue() == null) {
+                producedLabel.setText("Start/End fehlt");
+                return;
+            }
 
+            String start = startDate.getValue().atStartOfDay().toString();
+            String end = endDate.getValue().atTime(23, 59).toString();
 
-        //hardcoded
-        System.out.println("Showing data from " + start + " to " + end);
-        producedLabel.setText("143.024 kWh");
-        usedLabel.setText("130.101 kWh");
-        gridUsedLabel.setText("14.75 kWh");
+            EnergyHistorical data = apiController.getHistoricalEnergyData(start, end);
+
+            producedLabel.setText(String.format("Community produced %.2f kWh", data.getProduced()));
+            usedLabel.setText(String.format("Community used %.2f kWh", data.getUsed()));
+            gridUsedLabel.setText(String.format("Grid used %.2f kWh", data.getGridUsed()));
+        } catch (Exception e) {
+            producedLabel.setText("Fehler");
+            usedLabel.setText("Fehler");
+            gridUsedLabel.setText("Fehler");
+            e.printStackTrace();
+        }
     }
 }
 

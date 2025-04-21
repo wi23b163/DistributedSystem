@@ -10,7 +10,7 @@ public class EnergyApplication extends Application {
     public void start(Stage stage) throws Exception {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("energy-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 400, 400);
-        stage.setTitle("Energy Community UI");
+        stage.setTitle("Energy App");
         stage.setScene(scene);
         stage.show();
     }
