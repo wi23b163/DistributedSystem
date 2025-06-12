@@ -1,37 +1,65 @@
 package org.example.EnergyConsumptionProject.entity;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
+import java.sql.Timestamp;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+@Entity
+@Table(name = "usage_hourly")
 public class EnergyHistorical {
 
-    private double produced;    //in kWh
-    private double used;        //in kWh
-    private double GridUsed;    //in kWh
+    @Id
+    @Column(name = "hour")
+    private Timestamp hour;
 
-    public EnergyHistorical(float communityProduced) {
-        produced = communityProduced;
+    @Column(name = "community_produced")
+    private double produced;
+
+    @Column(name = "community_used")
+    private double used;
+
+    @Column(name = "grid_used")
+    private double gridUsed;
+
+    public EnergyHistorical() {}
+
+    public EnergyHistorical(double produced, double used, double gridUsed) {
+        this.produced = produced;
+        this.used = used;
+        this.gridUsed = gridUsed;
     }
-    public EnergyHistorical(float communityUsed, float gridUsed) {
-        used = communityUsed;
-        GridUsed = gridUsed;
+
+
+    public Timestamp getHour() {
+        return hour;
     }
-    
-    public EnergyHistorical(float communityProduced, float communityUsed, float gridUsed) {
-        produced = communityProduced;
-        used = communityUsed;
-        GridUsed = gridUsed;
+
+    public void setHour(Timestamp hour) {
+        this.hour = hour;
     }
 
     public double getProduced() {
         return produced;
     }
 
-    public void setProduced(double produced) { this.produced = produced; }
+    public void setProduced(double produced) {
+        this.produced = produced;
+    }
+
     public double getUsed() {
         return used;
     }
-    public void setUsed(double used) { this.used = used; }
-    public double getGridUsed() {
-        return GridUsed;
+
+    public void setUsed(double used) {
+        this.used = used;
     }
-    public void setGridUsed(double gridUsed) { this.GridUsed = gridUsed; }
-    
+
+    public double getGridUsed() {
+        return gridUsed;
+    }
+
+    public void setGridUsed(double gridUsed) {
+        this.gridUsed = gridUsed;
+    }
 }
+

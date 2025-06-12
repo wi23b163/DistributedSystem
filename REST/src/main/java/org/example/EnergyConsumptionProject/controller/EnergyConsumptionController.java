@@ -1,28 +1,45 @@
 package org.example.EnergyConsumptionProject.controller;
+
 import org.example.EnergyConsumptionProject.entity.EnergyCurrent;
 import org.example.EnergyConsumptionProject.entity.EnergyHistorical;
+import org.example.EnergyConsumptionProject.repository.CurrentPercentageRepository;
+import org.example.EnergyConsumptionProject.repository.UsageHourlyRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
-
+import java.util.List;
+import java.util.Map;
 
 @RestController
+@RequestMapping("/energy")
 public class EnergyConsumptionController {
 
-    @GetMapping("/energy/current")
-    public EnergyCurrent getEnergyCurrent() {
-        //Hardcoded zum testen
-        return new EnergyCurrent(78.54, 7.23);
+    @Autowired
+    private CurrentPercentageRepository currentRepo;
+
+    @Autowired
+    private UsageHourlyRepository usageRepo;
+
+    // Aktueller Energiezustand (neuester Eintrag aus current_percentage)
+    @GetMapping("/current")
+    public Map<String, Object> getEnergyCurrent() {
+        EnergyCurrent entity = currentRepo.findLatest();
+
+        return Map.of(
+                "hour", entity.getHour().toString(),
+                "communityPool", entity.getCommunityPool(),
+                "gridPortion", entity.getGridPortion()
+        );
     }
 
-    @GetMapping("/energy/historical")
-    public EnergyHistorical getEnergyHistorical(
+
+    // Historische Verbrauchs-/Produktionsdaten zwischen zwei Zeitpunkten
+    @GetMapping("/historical")
+    public List<EnergyHistorical> getEnergyHistorical(
             @RequestParam LocalDateTime start,
             @RequestParam LocalDateTime end) {
-        //Hardcoded zum testen
-        return new EnergyHistorical(143.024f, 130.101f, 14.75f);
+        return usageRepo.findBetween(Timestamp.valueOf(start), Timestamp.valueOf(end));
     }
 }

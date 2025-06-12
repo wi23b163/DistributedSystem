@@ -1,40 +1,59 @@
 package at.technikum.uiapp;
 
-import javafx.fxml.FXML;
-import javafx.scene.control.Label;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import at.technikum.uiapp.EnergyHistorical;
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDate;
+import java.util.List;
 
 public class ApiController {
 
-    private final HttpClient client = HttpClient.newHttpClient();
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private static final String BASE_URL = "http://localhost:8080/energy";
+    private final HttpClient client;
+    private final ObjectMapper objectMapper;
 
-    public EnergyCurrent getCurrentEnergyData() throws Exception {
+    public ApiController() {
+        client = HttpClient.newHttpClient();
+        objectMapper = new ObjectMapper();
+    }
+
+    public EnergyCurrent getCurrentEnergyData() throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI("http://localhost:8080/energy/current"))
+                .uri(URI.create(BASE_URL + "/current"))
                 .GET()
                 .build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
         return objectMapper.readValue(response.body(), EnergyCurrent.class);
     }
 
-    public EnergyHistorical getHistoricalEnergyData(String start, String end) throws Exception {
-        String uri = String.format("http://localhost:8080/energy/historical?start=%s&end=%s", start, end);
+    public List<EnergyHistorical> getHistoricalEnergyData(LocalDate start, LocalDate end)
+            throws IOException, InterruptedException {
+
+        String url = BASE_URL + "/historical?start=" + start.atStartOfDay() + "&end=" + end.atTime(23, 59, 59);
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI(uri))
+                .uri(URI.create(url))
                 .GET()
                 .build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        return objectMapper.readValue(response.body(), EnergyHistorical.class);
+        System.out.println("RESPONSE: " + response.body());
+
+
+        if (response.statusCode() != 200) {
+            throw new RuntimeException("API Fehler: " + response.statusCode() + "\n" + response.body());
+        }
+
+        return objectMapper.readValue(response.body(), new TypeReference<List<EnergyHistorical>>() {});
+
     }
 
-
 }
-

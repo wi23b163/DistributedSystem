@@ -3,6 +3,10 @@ package at.technikum.uiapp;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
+
+import java.time.LocalDate;
+import java.util.List;
+
 public class EnergyController {
 
     @FXML
@@ -32,19 +36,42 @@ public class EnergyController {
     @FXML
     protected void onShowDataClick() {
         try {
-            if (startDate.getValue() == null || endDate.getValue() == null) {
-                producedLabel.setText("Start/End fehlt");
+            LocalDate startVal = startDate.getValue();
+            LocalDate endVal = endDate.getValue();
+
+            if (startVal == null || endVal == null || startVal.isAfter(endVal)) {
+                producedLabel.setText("Ungültiges Datum");
+                usedLabel.setText("");
+                gridUsedLabel.setText("");
                 return;
             }
 
-            String start = startDate.getValue().atStartOfDay().toString();
-            String end = endDate.getValue().atTime(23, 59).toString();
+            // Liste von Daten laden
+            List<EnergyHistorical> dataList = apiController.getHistoricalEnergyData(startVal, endVal);
 
-            EnergyHistorical data = apiController.getHistoricalEnergyData(start, end);
+            if (dataList == null || dataList.isEmpty()) {
+                producedLabel.setText("Keine Daten gefunden");
+                usedLabel.setText("");
+                gridUsedLabel.setText("");
+                return;
+            }
 
-            producedLabel.setText(String.format("Community produced %.2f kWh", data.getProduced()));
-            usedLabel.setText(String.format("Community used %.2f kWh", data.getUsed()));
-            gridUsedLabel.setText(String.format("Grid used %.2f kWh", data.getGridUsed()));
+            // Summieren
+            double totalProduced = 0;
+            double totalUsed = 0;
+            double totalGridUsed = 0;
+
+            for (EnergyHistorical data : dataList) {
+                totalProduced += data.getProduced();
+                totalUsed += data.getUsed();
+                totalGridUsed += data.getGridUsed();
+            }
+
+            // Labels anzeigen
+            producedLabel.setText(String.format("Community produced %.2f kWh", totalProduced));
+            usedLabel.setText(String.format("Community used %.2f kWh", totalUsed));
+            gridUsedLabel.setText(String.format("Grid used %.2f kWh", totalGridUsed));
+
         } catch (Exception e) {
             producedLabel.setText("Fehler");
             usedLabel.setText("Fehler");
@@ -52,5 +79,8 @@ public class EnergyController {
             e.printStackTrace();
         }
     }
+
+
+
 }
 
