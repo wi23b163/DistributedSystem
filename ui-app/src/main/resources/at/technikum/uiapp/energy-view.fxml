@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="at.technikum.uiapp.EnergyController"
+      spacing="10" alignment="TOP_LEFT">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+    <Label text="Community Pool" />
+    <Label fx:id="communityUsedLabel" text="--%" />
+
+    <Label text="Grid Portion" />
+    <Label fx:id="gridPortionLabel" text="--%" />
+
+    <Button fx:id="refreshButton" text="refresh" onAction="#onRefreshClick"/>
+
+    <HBox spacing="5">
+        <Label text="Start" />
+        <DatePicker fx:id="startDate"/>
+    </HBox>
+
+    <HBox spacing="5">
+        <Label text="End" />
+        <DatePicker fx:id="endDate"/>
+    </HBox>
+
+    <Button fx:id="showDataButton" text="show data" onAction="#onShowDataClick"/>
+
+    <Label fx:id="producedLabel" text="Community produced -- kWh"/>
+    <Label fx:id="usedLabel" text="Community used -- kWh"/>
+    <Label fx:id="gridUsedLabel" text="Grid used -- kWh"/>
+</VBox>
