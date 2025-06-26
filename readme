@@ -19,4 +19,6 @@ Wie startet man das Projekt?
 Vor dem starten der UI-App kommmt eventuell die fehlermeldung das das Java SDK fehlt.
 Bei IntelliJ unter Run --> Edit Configurations --> VM-Options --> -module-path "C:\javafx-sdk-21\lib" --add-modules javafx.controls,javafx.fxml 
 
+**Der finale Code befindet sich im Master-Branch. Die Commits die davor gemacht wurden sieht man in den anderen 2 Branches**
+
 Dieses Projekt wurde von Christoph Varghese, Mahian Islam und Müfide Yalcin entwickelt.
