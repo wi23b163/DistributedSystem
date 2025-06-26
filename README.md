@@ -1,0 +1,26 @@
+**Der finale Code befindet sich im Master-Branch. Die Commits die davor gemacht wurden sieht man in den anderen 2 Branches**
+
+Dieses System bildet eine Energie-Community nach, in der mehrere Teilnehmer gemeinsam Strom erzeugen und nutzen. Es zeigt, wie viel Energie aktuell verbraucht wird und wie sich dieser Verbrauch auf die eigene Community und das öffentliche Stromnetz verteilt. Die Daten können in einer grafischen Benutzeroberfläche sowohl in Echtzeit als auch rückblickend angezeigt werden.
+Das System besteht aus 6 Komponenten: Rest API, UI App, Usage Service, Percentage Service, Energy Producer und Energy User.
+
+UI-App: Hier können die Daten eingesehen werden --> Akutelle Prozente (Wie viel die Community verbraucht hat und wie viel davon kam vom Netz) und historische Werte nach Eingabe eines Zeitraums.
+Rest API: Stellt die Verbindung zwischen UI-App und der Datenbank her
+EnergyUser: Schickt durch die RabbitMQ realistische Verbraucherwerte an die UsageService
+EnergyProducer: Schcikt durch die RabbitMQ realistische Produktionswerte an die UsageService
+UsageService: Nimmt die Werte an und aktualisiert die Datenbank mit : community_used, community_produced, grid_used
+PercentageService:Berechnet den prozentwert des aktuellen Stundenverbrauch
+
+Wie startet man das Projekt?
+1. Docker Compose starten (davor Docker Desktop laufen lassen)
+2. EnergyConsumptionController (REST) starten
+3. UsageService starten
+4. EnergyProducer und EnergyUser starten
+5. Percentage Service starten
+6. EnergyApplication (UI-APP) starten
+
+Vor dem starten der UI-App kommmt eventuell die fehlermeldung das das Java SDK fehlt.
+Bei IntelliJ unter Run --> Edit Configurations --> VM-Options --> -module-path "C:\javafx-sdk-21\lib" --add-modules javafx.controls,javafx.fxml 
+
+**Der finale Code befindet sich im Master-Branch. Die Commits die davor gemacht wurden sieht man in den anderen 2 Branches**
+
+Dieses Projekt wurde von Christoph Varghese, Mahian Islam und Müfide Yalcin entwickelt.
